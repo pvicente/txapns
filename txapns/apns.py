@@ -67,11 +67,11 @@ class APNSProtocol(Protocol):
         self.factory.addClient(self)
     
     def sendMessage(self, msg):
-        log.msg('APNSProtocol sendMessage msg=%s' % binascii.hexlify(msg))
+        #log.msg('APNSProtocol sendMessage msg=%s' % binascii.hexlify(msg))
         return self.transport.write(msg)
     
     def connectionLost(self, reason):
-        log.msg('APNSProtocol connectionLost')
+        log.msg('APNSProtocol connectionLost %s' %(reason))
         self.factory.removeClient(self)
 
 
