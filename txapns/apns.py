@@ -125,18 +125,24 @@ class APNSClientFactory(ReconnectingClientFactory):
     protocol = APNSProtocol
     
     def __init__(self):
+        self._deferred=[] 
         self.clientProtocol = None
-        self.deferred = defer.Deferred()
-        self.deferred.addErrback(log_errback('APNSClientFactory __init__'))
+    
+    @property
+    def deferred(self):
+        d = defer.Deferred()
+        self._deferred.append(d)
+        return d
     
     def addClient(self, p):
         self.clientProtocol = p
-        self.deferred.callback(p)
+        for d in self._deferred:
+            d.callback(p)
+        self._deferred=[]
     
     def removeClient(self, p):
+        self._deferred = []
         self.clientProtocol = None
-        self.deferred = defer.Deferred()
-        self.deferred.addErrback(log_errback('APNSClientFactory removeClient'))
     
     def startedConnecting(self, connector):
         log.msg('APNSClientFactory startedConnecting')
